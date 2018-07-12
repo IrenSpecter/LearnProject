@@ -2,12 +2,16 @@
 
 import requests
 import html
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
+import logging
+
+from quiz_bot_key import main
 
 from category_names import get_categories
 
 # import json
 
-def load_data(filepath):
+def load_data():
     # return json.load(open(filepath, 'r'))
     with open('proxy_login.json', 'r') as f_proxy_login:
         proxy_login = f_proxy_login.read()
@@ -30,26 +34,25 @@ def get_data(url, proxies):
     else:
             print('Server is not responding now and something has broken.')
 
-def get_token():
-    with open('bot_token.json', 'r') as f_bot_token:
-        bot_token = f_bot_token.read()
-        return bot_token
 
-
-def greet_user(bot, update):
+def greet_user():
     hello = 'Hello, darling! I am Crazy Quiz Bot. \nI know many fun questions from all over the world. \nLet`s do it!'
     print(hello)
     update.message.reply_text(hello)
+    if user_text == update.message.text:
+      print(user_text)
+      update.message.reply_text(user_text)
 
 
-def talk_to_me(bot, update):
-    user_text = update.message.text 
-    print(user_text)
-    update.message.reply_text(user_text)
+# def talk_to_me(bot, update): # повторяет функцию выше
+#     user_text = update.message.text 
+#     print(user_text)
+#     update.message.reply_text(user_text)
 
 
 def get_user_questions(): 
     # data = get_data('https://opentdb.com/api.php?amount=5&category=9&difficulty=easy&type=multiple')
+    greet_user()
     categories = get_categories()
     user_category_name = input('You can choose any topic you wish: ')
     user_category_id = categories[user_category_name]
@@ -60,8 +63,8 @@ def get_user_questions():
     # import pdb; pdb.set_trace()
 
 
-def print_questions():
-    data = user_data()
+def print_questions(results):
+    data = get_data()
     for results_index in range(len(data['results'])):
 
         raw_question = 'Question: %s\n' % data['results'][results_index]['question']
@@ -74,7 +77,7 @@ def print_questions():
         for raw_answer in raw_answers:
             answer = html.unescape(raw_answer)
             answers.append(answer)
-_
+
         print(question)
         for answer in answers:
             print(str(answer))
@@ -91,12 +94,12 @@ _
 
 
 if __name__ == '__main__':
-    PROXY = proxy_login_data()
-    answers_questions = 'yes'
-    while answers_questions == 'yes':
-        user_questions_api = user_questions_url()
-        result_quiz = quiz(user_questions_api, PROXY)
-        answers_questions = quiz_questions_answers(result_quiz)
+    PROXY = load_data()
+    user_choice_continue = 'yes'
+    while user_choice_continue == 'yes':
+        user_questions_api = get_user_questions()
+        # result_quiz = get_data(user_questions_api, PROXY)
+        answers_questions = print_questions(result_quiz)
     else:
         print('Okey and Buy. I will miss you.')
 
